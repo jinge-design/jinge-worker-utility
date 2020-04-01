@@ -1,0 +1,40 @@
+{
+  "name": "jinge-worker-utility",
+  "version": "0.0.1",
+  "description": "web worker utility for https://jinge.design",
+  "main": "lib/index.js",
+  "scripts": {
+    "tsc": "tsc -w",
+    "start": "npm run dev",
+    "dev": "webpack-dev-server --config ./script/webpack.config.js",
+    "build-dev": "webpack --config ./script/webpack.config.js",
+    "build": "rm -rf ./dist && PRODUCTION=true npm run build-web-dev",
+    "lint": "eslint '**/*.ts'",
+    "fix-lint": "eslint --fix '**/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jinge-design/jinge-worker-utility"
+  },
+  "keywords": [
+    "jinge-design",
+    "worker"
+  ],
+  "author": "Yuhang Ge <abeyuhang@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/eslint": "^6.1.9",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "eslint": "^6.8.0",
+    "precommit-hook": "^3.0.0",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  },
+  "pre-commit": [
+    "lint"
+  ],
+  "dependencies": {}
+}

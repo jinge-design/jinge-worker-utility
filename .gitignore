@@ -1,0 +1,8 @@
+lib/
+node_modules
+.vscode/
+.jshintignore
+.jshintrc
+.tmp/
+dist/
+jinge-wasm-utility

@@ -1,0 +1,6 @@
+node_modules
+.vscode/
+.jshintignore
+.jshintrc
+.tmp/
+jinge-wasm-utility
