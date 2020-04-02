@@ -1,4 +1,4 @@
-import { isObject } from './util';
+import { isObject, isArrayBuffer } from './util';
 
 let INCREMENT = 0;
 
@@ -17,19 +17,23 @@ export type RPCOpitons = {
   timeout: number;
 };
 
-export class WorkerRPCServer {
-  timeout: number;
-  wait: Map<string, CallInfo>; 
-  constructor(public worker: Worker, {
+export class RPC {
+  private timeout: number;
+  private wait: Map<string, CallInfo>;
+  private remote: Worker;
+
+  constructor(remote: Worker, {
     timeout = DEFAULT_CALL_TIMEOUT
   }: RPCOpitons = {
     timeout: DEFAULT_CALL_TIMEOUT
   }) {
     this.timeout = timeout;
     this.wait = new Map();
-    this.worker.addEventListener('message', this._onMessage.bind(this));
+    this.remote = remote;
+    remote.addEventListener('message', this._onMessage.bind(this));
   }
-  _onMessage(msg: MessageEvent): void {
+
+  private _onMessage(msg: MessageEvent): void {
     const result = msg.data as {
       id: string;
       ret?: unknown;
@@ -51,7 +55,8 @@ export class WorkerRPCServer {
     }
     this._clear(info);
   }
-  _onTimeout(info: CallInfo): void {
+
+  private _onTimeout(info: CallInfo): void {
     if (!info || !info.id || !this.wait.has(info.id)) {
       return;
     }
@@ -60,7 +65,8 @@ export class WorkerRPCServer {
     info.reject(new Error('RPC call timeout.'));
     this._clear(info);
   }
-  _clear(info: CallInfo): void {
+
+  private _clear(info: CallInfo): void {
     this.wait.delete(info.id);
     if (info.tm) {
       clearTimeout(info.tm);
@@ -70,29 +76,24 @@ export class WorkerRPCServer {
       info.resolve = 
       info.reject = null;
   }
-  callFn(functionName: string, ...args: unknown[]): void {
+
+  callFn(functionName: string, ...args: unknown[]): Promise<unknown> {
     const id = (INCREMENT++).toString(32);
-    const info = {
-      id,
-      fn: functionName,
-      args,
-      resolve: null,
-      reject: null,
-      tm: 0
+    const info: CallInfo = {
+      id, fn: functionName, args, tm: 0,
+      resolve: null, reject: null
     };
     const p = new Promise((resolve, reject) => {
       info.resolve = resolve;
       info.reject = reject;
     });
-    info.tm = setTimeout(() => {
-      this._handleTimeout(info);
+    info.tm = window.setTimeout(() => {
+      this._onTimeout(info);
     }, this.timeout);
     this.wait.set(id, info);
-    this.worker.postMessage({
-      id,
-      fn: functionName,
-      args
-    });
+    this.remote.postMessage({
+      id, fn: functionName, args
+    }, args.filter(v => isArrayBuffer(v)) as Transferable[]);
     return p;
   }
 }

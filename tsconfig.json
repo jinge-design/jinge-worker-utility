@@ -9,10 +9,13 @@
     "alwaysStrict": true,
     "moduleResolution": "node",
     "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "types",
     "outDir": "lib",
     "baseUrl": ".",
     "paths": {
-      
+      "jinge-wasm-utility": ["./deps/jinge-wasm-utility"],
+      "jinge-bson": ["./deps/jinge-bson"]
     }
   },
   "include": [

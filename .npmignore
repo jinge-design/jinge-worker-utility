@@ -3,4 +3,4 @@ node_modules
 .jshintignore
 .jshintrc
 .tmp/
-jinge-wasm-utility
+deps/
