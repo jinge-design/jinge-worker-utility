@@ -3,6 +3,7 @@ node_modules
 .vscode/
 .jshintignore
 .jshintrc
+**/.DS_Store
 .tmp/
 dist/
 deps/
